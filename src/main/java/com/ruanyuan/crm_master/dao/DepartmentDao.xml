@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.DepartmentDao">
+    <!-- 添加部门 -->
+    <insert id="addDept" parameterType="department">
+        insert into dept(deptName,deptTime,deptRemark)
+        values (#{deptName},#{deptTime},#{deptRemark});
+    </insert>
+    <!-- 删除部门 -->
+    <delete id="deleteDept" parameterType="int">
+        delete  from dept where deptId=#{deptId};
+    </delete>
+    <!-- 修改部门 -->
+    <!--部门补充sql-->
+    <sql id="updeptkey">
+        <if test="deptName!=null">
+            deptName=#{deptName},
+        </if>
+        <if test="deptTime!=null">
+            deptTime=#{deptTime},
+        </if>
+        <if test="deptRemark!=null">
+            deptRemark=#{deptRemark},
+        </if>
+    </sql>
+    <update id="updateDept" parameterType="department">
+        update dept
+        <set>
+            <include refid="updeptkey"></include>
+        </set>
+        where deptId=#{deptId}
+    </update>
+    <!-- 查询部门 -->
+    <!--    <select id="getAllDept" resultType="department">-->
+    <!--		select  * from dept-->
+    <!--	</select>-->
+    <!--根据id查询部门信息-->
+    <select id="getDeptById" resultType="department">
+        select * from dept
+        where deptId=#{deptId}
+    </select>
+    <!--根据部门名称多条件查询-->
+    <select id="getAllDept" resultType="department">
+        select * from dept
+        <where>
+            <!--当部门姓名不为空时 -->
+            <if test="deptName!=null and deptName!=''">
+                and deptName like concat('%',#{deptName},'%')
+            </if>
+        </where>
+    </select>
+    <!--批量删除-->
+    <delete id="deleteMoreDept" parameterType="int">
+        delete from dept where deptId in
+        <foreach collection="array" index="index" close=")" open="(" item="deptId" separator=",">
+            #{deptId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.EmployeeDao">
+    <!--添加方法sql补充-->
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <!--当性别不为空时 -->
+            <if test="empSex!=null">
+                empSex,
+            </if>
+            <!--当电话不为空时 -->
+            <if test="empTel!=null">
+                empTel,
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="empEmail!=null">
+                empEmail,
+            </if>
+            <!--当地址不为空时 -->
+            <if test="empAddress!=null">
+                empAddress,
+            </if>
+            <!--当入职时间不为空时 -->
+            <if test="empWorkTime!=null">
+                empWorkTime
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <!--当性别不为空时 -->
+            <if test="empSex!=null">
+                #{empSex},
+            </if>
+            <!--当电话不为空时 -->
+            <if test="empTel!=null">
+                #{empTel},
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="empEmail!=null">
+                #{empEmail},
+            </if>
+            <!--当地址不为空时 -->
+            <if test="empAddress!=null">
+                #{empAddress},
+            </if>
+            <!--当入职时间不为空时 -->
+            <if test="empWorkTime!=null">
+                #{empWorkTime}
+            </if>
+        </trim>
+    </sql>
+    <!-- 员工登录 -->
+    <select id="getLogin" parameterType="employee"
+            resultType="employee">
+		select * from employee
+		where account=#{account} and
+		password=#{password};
+	</select>
+    <!-- 员工注册 -->
+    <insert id="addEmployee" parameterType="employee">
+        insert into
+        employee(empName,account,password,<include refid="key"></include>,empRoleId,empDeptId)
+        values(#{empName},#{account},#{password},<include refid="value"></include>,#{role.roleId},#{department.deptId});
+    </insert>
+    <!-- 删除员工 -->
+    <delete id="deleteEmployee" parameterType="int">
+		delete from employee
+		where empId=#{empId};
+	</delete>
+    <!-- 修改员工 -->
+    <update id="updateEmployee" parameterType="employee">
+        update employee
+        <set>
+            <!--当姓名不为空时-->
+            <if test="empName!=null">
+                empName=#{empName},
+            </if>
+            <!--当账号不为空时-->
+            <if test="account!=null">
+                account=#{account},
+            </if>
+            <!--当密码不为空时-->
+            <if test="password!=null">
+                password=#{password},
+            </if>
+            <!--当性别不为空时 -->
+            <if test="empSex!=null">
+                empSex=#{empSex},
+            </if>
+            <!--当电话不为空时 -->
+            <if test="empTel!=null">
+                empTel=#{empTel},
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="empEmail!=null">
+                empEmail=#{empEmail},
+            </if>
+            <!--当地址不为空时 -->
+            <if test="empAddress!=null">
+                empAddress= #{empAddress},
+            </if>
+            <if test="role!=null">
+                empRoleId=#{role.roleId},
+            </if>
+            <if test="department!=null">
+                empDeptId=#{department.deptId},
+            </if>
+            <if test="role!=null">
+                empRoleId=#{role.roleId},
+            </if>
+            <if test="department!=null">
+                empDeptId=#{department.deptId}
+            </if>
+        </set>
+        where empId=#{empId};
+    </update>
+
+    <!-- 查询员工 -->
+    <select id="getAllEmployee" resultType="employee" resultMap="allemps">
+        SELECT * FROM employee e
+        INNER JOIN role r
+        ON e.empRoleId=r.roleId
+        INNER JOIN dept d
+        ON e.empDeptId=d.deptId
+        <where>
+            <!--当员工姓名不为空时 -->
+            <if test="empName!=null and empName!=''">
+                and empName like concat('%',#{empName},'%')
+            </if>
+            <!--当员工账号不为空时 -->
+            <if test="account!=null and account!=''">
+                and account like concat('%',#{account},'%')
+            </if>
+            <!--当员工角色不为空时 -->
+            <if test="roleId!=null and roleId!=''">
+                and empRoleId = #{role.roleId}
+            </if>
+            <!--当员工部门不为空时 -->
+            <if test="deptId!= null and deptId!=''">
+                and empDeptId = #{dept.deptId}
+            </if>
+        </where>
+    </select>
+    <resultMap type="employee" id="allemps">
+        <id property="empId" column="empId"/>
+        <result property="empName" column="empName"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="empSex" column="empSex"/>
+        <result property="empTel" column="empTel"/>
+        <result property="empEmail" column="empEmail"/>
+        <result property="empAddress" column="empAddress"/>
+        <result property="empWorkTime" column="empWorkTime"/>
+        <result property="empOpen" column="empOpen"/>
+        <result property="empState" column="empState"/>
+        <association property="role" javaType="role">
+            <id property="roleId" column="roleId"/>
+            <result property="roleName" column="roleName"/>
+            <result property="roleRemark" column="roleRemark"/>
+        </association>
+        <association property="department" javaType="department">
+            <id property="deptId" column="deptId"/>
+            <result property="deptName" column="deptName"/>
+            <result property="deptTime" column="deptTime"/>
+            <result property="deptRemark" column="deptRemark"/>
+        </association>
+    </resultMap>
+    <!-- 根据id查询员工信息 -->
+    <select id="getEmpById" resultMap="employeeById">
+        SELECT * FROM  employee e
+        INNER JOIN role r
+        ON e.empRoleId=r.roleId
+        INNER JOIN dept d
+        ON e.empDeptId=d.deptId where empId=#{empId}
+	</select>
+    <resultMap type="employee" id="employeeById">
+        <id property="empId" column="empId"/>
+        <result property="empName" column="empName"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="empSex" column="empSex"/>
+        <result property="empTel" column="empTel"/>
+        <result property="empEmail" column="empEmail"/>
+        <result property="empAddress" column="empAddress"/>
+        <result property="empWorkTime" column="empWorkTime"/>
+        <result property="empOpen" column="empOpen"/>
+        <result property="empState" column="empState"/>
+        <association property="role" javaType="role">
+            <id property="roleId" column="roleId"/>
+            <result property="roleName" column="roleName"/>
+            <result property="roleRemark" column="roleRemark"/>
+        </association>
+        <association property="department" javaType="department">
+            <id property="deptId" column="deptId"/>
+            <result property="deptName" column="deptName"/>
+            <result property="deptTime" column="deptTime"/>
+            <result property="deptRemark" column="deptRemark"/>
+        </association>
+    </resultMap>
+    <!--根据员工姓名模糊查询-->
+    <select id="getEmpLikeName" resultType="employee">
+          SELECT * FROM  employee e
+        INNER JOIN role r
+        ON e.empRoleId=r.roleId
+        INNER JOIN dept d
+        ON e.empDeptId=d.deptId where empName like CONCAT('%',#{empNmae},'%')
+    </select>
+    <!--根据员工账号模糊查询-->
+    <select id="getEmpLikeAccount" resultType="employee">
+          SELECT * FROM  employee e
+        INNER JOIN role r
+        ON e.empRoleId=r.roleId
+        INNER JOIN dept d
+        ON e.empDeptId=d.deptId where account like CONCAT('%',#{account},'%')
+    </select>
+    <!--批量删除-->
+    <delete id="deleteMoreEmp" parameterType="int">
+        delete from employee where empId in
+        <foreach collection="array" index="index" close=")" open="(" item="empId" separator=",">
+            #{empId}
+        </foreach>
+    </delete>
+    <!--根据员工名查询员工信息-->
+    <select id="getEmployeeByName" resultType="employee">
+        select * from employee where empName=#{empName}
+    </select>
+
+</mapper>

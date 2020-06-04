@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.LoginLogDao">
+	<!-- 添加登录日志信息 -->
+	<insert id="addLoginLog" parameterType="loginLog"></insert>
+	<!-- 删除登录日志信息 -->
+	<delete id="deleteLoginLog" parameterType="int"></delete>
+	<!-- 修改登录日志信息 -->
+	<update id="updateLoginLog" parameterType="loginLog"></update>
+	<!-- 查询登录日志信息 -->
+	<select id="getAllLoginLog" parameterType="loginLog"></select>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.InterviewDao">
+    <!--添加方法sql补充-->
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <!--当时间不为空时 -->
+            <if test="interDatetime!=null">
+                interDatetime,
+            </if>
+            <!--当备注不为空时 -->
+            <if test="interRemark!=null">
+                interRemark,
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <!--当时间不为空时 -->
+            <if test="interDatetime!=null">
+                #{interDatetime},
+            </if>
+            <!--当备注不为空时 -->
+            <if test="interRemark!=null">
+                #{interRemark},
+            </if>
+        </trim>
+    </sql>
+    <!-- 添加访谈信息 -->
+    <insert id="addInterview" parameterType="interview">
+        insert into interview(interInfo,<include refid="key"></include>,interCustId,interEmpId)
+        values (#{interInfo}, <include refid="value"></include>,#{customer.custId},#{employee.empId})
+    </insert>
+    <!-- 删除访谈信息 -->
+    <delete id="deleteInterview" parameterType="int">
+		delete from interview where interId=#{interId}
+	</delete>
+    <!-- 修改访谈信息 -->
+    <update id="updateInterview" parameterType="interview">
+        update interview
+        <set>
+            <!--当内容不为空时-->
+            <if test="interInfo!=null">
+                interInfo=#{interInfo},
+            </if>
+            <!--当时间不为空时-->
+            <if test="interDatetime!=null">
+                interDatetime=#{interDatetime},
+            </if>
+            <!--当备注不为空时-->
+            <if test="interRemark!=null">
+                interRemark=#{interRemark},
+            </if>
+            <!--当客户不为空时 -->
+            <if test="customer!=null">
+                interCustId=#{customer.custId},
+            </if>
+            <!--当负责人不为空时 -->
+            <if test="employee!=null">
+                interEmpId=#{employee.empId},
+            </if>
+        </set>
+        where interId=#{interId}
+    </update>
+    <!-- 查询访谈信息 -->
+    <select id="getAllInterview" resultType="interview" resultMap="allInters">
+        SELECT * FROM interview i
+        INNER JOIN customer c
+        ON i.interCustId=c.custId
+        INNER JOIN employee e
+        ON i.interEmpId=e.empId
+        <where>
+            <!--当客户不为空时 -->
+            <if test="custName!=null and custName!=''">
+                and c.custName like concat('%',#{custName},'%')
+            </if>
+            <!--当员工不为空时 -->
+            <if test="empName!= null and empName!=''">
+                and e.empName like concat('%',#{empName},'%')
+            </if>
+            <!--当访谈时间不为空时 -->
+            <if test="interDatetime!=null and interDatetime!=''">
+                and interDatetime
+                <![CDATA[>=]]>
+                #{interDatetime}
+            </if>
+            <!--结束时间不为空时-->
+            <if test="endTime!=null and endTime!= ''">
+                and interDatetime
+                <![CDATA[<=]]>
+                #{endTime}
+            </if>
+        </where>
+    </select>
+    <resultMap type="Interview" id="allInters">
+        <id property="interId" column="interId"/>
+        <result property="interInfo" column="interInfo"/>
+        <result property="interDatetime" column="interDatetime"/>
+        <result property="interRemark" column="interRemark"/>
+        <association property="customer" javaType="customer" column="custId"
+                     select="com.ruanyuan.crm_master.dao.CustomerDao.getCustomerById">
+        </association>
+        <association property="employee" javaType="employee" column="empId"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
+        </association>
+    </resultMap>
+    <!--根据id查询访谈信息-->
+    <select id="getInterviewById" resultType="interview" resultMap="getInterById">
+		SELECT * FROM interview i
+        INNER JOIN customer c
+        ON i.interCustId=c.custId
+        INNER JOIN employee e
+        ON i.interEmpId=e.empId
+        where interId=#{interId}
+	</select>
+    <resultMap type="Interview" id="getInterById">
+        <id property="interId" column="interId"/>
+        <result property="interInfo" column="interInfo"/>
+        <result property="interDatetime" column="interDatetime"/>
+        <result property="interRemark" column="interRemark"/>
+        <association property="customer" javaType="customer" column="custId"
+                     select="com.ruanyuan.crm_master.dao.CustomerDao.getCustomerById">
+        </association>
+        <association property="employee" javaType="employee" column="empId"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
+        </association>
+    </resultMap>
+    <!--批量删除-->
+    <delete id="deleteMoreInterview" parameterType="int">
+        delete from interview where interId in
+        <foreach collection="array" index="index" close=")" open="(" item="interId" separator=",">
+            #{interId}
+        </foreach>
+    </delete>
+
+</mapper>

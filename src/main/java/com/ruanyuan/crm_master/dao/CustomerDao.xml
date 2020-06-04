@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.CustomerDao">
+    <!--添加方法sql补充-->
+    <sql id="key">
+        <trim suffixOverrides=",">
+            <!--当信息来源不为空时 -->
+            <if test="custSource!=null">
+                custSource,
+            </if>
+            <!--当性别不为空时 -->
+            <if test="custSex!=null">
+                custSex,
+            </if>
+            <!--当电话不为空时 -->
+            <if test="custTel!=null">
+                custTel,
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="custEmail!=null">
+                custEmail,
+            </if>
+            <!--当地址不为空时 -->
+            <if test="custAddress!=null">
+                custAddress,
+            </if>
+            <!--当入职时间不为空时 -->
+            <if test="custCreatetime!=null">
+                custCreatetime
+            </if>
+        </trim>
+    </sql>
+    <sql id="value">
+        <trim suffixOverrides=",">
+            <!--当客户来源不为空时 -->
+            <if test="custSource!=null">
+                #{custSource},
+            </if>
+            <!--当性别不为空时 -->
+            <if test="custSex!=null">
+                #{custSex},
+            </if>
+            <!--当电话不为空时 -->
+            <if test="custTel!=null">
+                #{custTel},
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="custEmail!=null">
+                #{custEmail},
+            </if>
+            <!--当地址不为空时 -->
+            <if test="custAddress!=null">
+                #{custAddress},
+            </if>
+            <!--当创建时间时间不为空时 -->
+            <if test="custCreatetime!=null">
+                #{custCreatetime}
+            </if>
+        </trim>
+    </sql>
+    <!-- 添加客户 -->
+    <insert id="addCustomer" parameterType="customer">
+        insert into customer(custName,<include refid="key"></include>,custEmpId)
+        values (#{custName}, <include refid="value"></include>,#{employee.empId})
+    </insert>
+    <!-- 删除客户 -->
+    <delete id="deleteCustomer" parameterType="int">
+		delete from customer where custId=#{custId}
+    </delete>
+    <!-- 修改客户 -->
+    <update id="updateCustomer" parameterType="customer">
+        update customer
+        <set>
+            <!--当姓名不为空时-->
+            <if test="custName!=null">
+                custName=#{custName},
+            </if>
+            <!--当来源不为空时-->
+            <if test="custSource!=null">
+                custSource=#{custSource},
+            </if>
+            <!--当性别不为空时-->
+            <if test="custSex!=null">
+                custSex=#{custSex},
+            </if>
+            <!--当电话不为空时 -->
+            <if test="custTel!=null">
+                custTel=#{custTel},
+            </if>
+            <!--当邮箱不为空时 -->
+            <if test="custEmail!=null">
+                custEmail=#{custEmail},
+            </if>
+            <!--当地址不为空时 -->
+            <if test="custAddress!=null">
+                custAddress=#{custAddress},
+            </if>
+            <!--当员工不为空时-->
+            <if test="employee!=null">
+                empRoleId=#{employee.empId},
+            </if>
+        </set>
+        where custId=#{custId}
+    </update>
+    <!-- 查询客户 -->
+    <select id="getAllCustomer" resultType="customer" resultMap="CustEmp">
+        select * from customer
+        inner join employee
+        on custEmpId=empId
+        <where>
+            <!--当员工姓名不为空时 -->
+            <if test="custName!=null and custName!=''">
+                and custName like concat('%',#{custName},'%')
+            </if>
+        </where>
+    </select>
+    <resultMap id="CustEmp" type="Customer">
+        <id property="custId" column="custId"/>
+        <result property="custName" column="custName"/>
+        <result property="custSource" column="custSource"/>
+        <result property="custSex" column="custSex"/>
+        <result property="custTel" column="custTel"/>
+        <result property="custEmail" column="custEmail"/>
+        <result property="custAddress" column="custAddress"/>
+        <result property="custCreatetime" column="custCreatetime"/>
+        <association property="employee" javaType="employee" column="empId"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById"></association>
+    </resultMap>
+
+    <!--根据id查询客户信息-->
+    <select id="getCustomerById" resultType="customer">
+        select * from customer
+        inner join employee
+        on custEmpId=empId
+		where custId=#{custId}
+    </select>
+    <!--批量删除-->
+    <delete id="deleteMoreCustomer" parameterType="int">
+        delete from customer where custId in
+        <foreach collection="array" index="index" close=")" open="(" item="custId" separator=",">
+            #{custId}
+        </foreach>
+    </delete>
+
+
+
+</mapper>

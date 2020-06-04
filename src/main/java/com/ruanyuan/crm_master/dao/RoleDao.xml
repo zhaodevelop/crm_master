@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.RoleDao">
+    <!-- 添加角色 -->
+    <insert id="addRole" parameterType="role">
+		insert into role(roleName,roleRemark)
+		values (#{roleName},#{roleRemark})
+	</insert>
+    <!-- 删除角色 -->
+    <delete id="deleteRole" parameterType="int">
+		delete from role
+		where roleId=#{roleId}
+	</delete>
+    <!-- 修改角色 -->
+    <update id="updateRole" parameterType="role">
+        update role
+        <set>
+            <if test="roleName!=null">
+                roleName=#{roleName},
+            </if>
+            <if test="roleRemark!=null">
+                roleRemark=#{roleRemark},
+            </if>
+        </set>
+        where roleId=#{roleId}
+    </update>
+    <!--    &lt;!&ndash; 查询角色 &ndash;&gt;-->
+    <!--    <select id="getAllRole" resultType="role">-->
+    <!--		select * from role-->
+    <!--	</select>-->
+    <!--根据id查询角色信息-->
+    <select id="getRoleById" resultType="role">
+		select * from Role
+		where roleId=#{roleId}
+    </select>
+    <!--根据角色名称多条件查询-->
+    <select id="getAllRole" resultType="role">
+        select * from role
+        <where>
+            <!--当角色姓名不为空时 -->
+            <if test="roleName!=null and roleName!=''">
+                and roleName like concat('%',#{roleName},'%')
+            </if>
+        </where>
+    </select>
+    <!--批量删除-->
+    <delete id="deleteMoreRole" parameterType="int">
+        delete from role where roleId in
+        <foreach collection="array" index="index" close=")" open="(" item="roleId" separator=",">
+            #{roleId}
+        </foreach>
+    </delete>
+
+</mapper>

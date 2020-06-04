@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.TaskDao">
+	<!-- 添加任务信息 -->
+	<insert id="addTask" parameterType="task"></insert>
+	<!-- 删除任务信息 -->
+	<delete id="deleteTask" parameterType="int"></delete>
+	<!-- 修改任务信息 -->
+	<update id="updateTask" parameterType="task"></update>
+	<!-- 查询任务信息 -->
+	<select id="getAllTask" parameterType="task"></select>
+</mapper>

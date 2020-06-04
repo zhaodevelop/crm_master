@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruanyuan.crm_master.dao.ActionLogDao">
+	<!-- 添加操作日志信息 -->
+	<insert id="addActionLog" parameterType="actionLog"></insert>
+	<!-- 删除操作日志信息 -->
+	<delete id="deleteActionLog" parameterType="int"></delete>
+	<!-- 修改操作日志信息 -->
+	<update id="updateActionLog" parameterType="actionLog"></update>
+	<!-- 查询操作日志信息 -->
+	<select id="getAllActionLog" parameterType="actionLog"></select>
+</mapper>
