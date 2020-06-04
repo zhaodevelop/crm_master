@@ -46,6 +46,7 @@ public class CustomerController {
     public List<Customer> getAllCusts() {
         //执行查询所有部门方法
         List<Customer> allCust = customerService.getAllCustomer();
+        System.out.println(allCust);
         return allCust;
     }
 
