@@ -1,7 +1,5 @@
 package com.ruanyuan.crm_master.service;
 
-import com.github.pagehelper.Page;
-import com.ruanyuan.crm_master.pojo.Customer;
 import com.ruanyuan.crm_master.pojo.Employee;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,11 +45,17 @@ public interface EmployeeService {
     public int updateEmployee(Employee Employee);
 
     /**
-     * 多条件获取所有员工
+     * 多条件查询员工信息
      *
-     * @return 分页后员工信息
+     * @param empName     员工姓名
+     * @param account     员工账号
+     * @param empWorkTime 入职时间开始
+     * @param endTime     入职时间结束
+     * @param empRoleId   角色id
+     * @param empDeptId   部门id
+     * @return 员工信息集合
      */
-    public List<Employee> getAllEmployee(@Param("empName") String empName, @Param("account") String account, @Param("role.roleId") Integer roleId, @Param("department.deptId") Integer deptId);
+    public List<Employee> getAllEmployee(@Param("empName") String empName, @Param("account") String account, @Param("empRoleId") Integer empRoleId, @Param("empDeptId") Integer empDeptId);
 
     /**
      * 分页查询所有员工信息

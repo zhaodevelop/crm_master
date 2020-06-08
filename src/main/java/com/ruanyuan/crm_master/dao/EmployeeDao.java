@@ -51,7 +51,7 @@ public interface EmployeeDao {
      *
      * @return 分页后员工信息
      */
-    public List<Employee> getAllEmployee(String empName, String account, Integer roleId, Integer deptId);
+    public List<Employee> getAllEmployee(@Param("empName") String empName, @Param("account") String account, @Param("empRoleId") Integer empRoleId, @Param("empDeptId") Integer empDeptId);
 
     /**
      * 获取所有员工

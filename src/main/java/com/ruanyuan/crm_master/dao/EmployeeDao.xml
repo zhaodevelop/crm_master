@@ -74,51 +74,20 @@
     <update id="updateEmployee" parameterType="employee">
         update employee
         <set>
-            <!--当姓名不为空时-->
-            <if test="empName!=null">
-                empName=#{empName},
-            </if>
-            <!--当账号不为空时-->
-            <if test="account!=null">
-                account=#{account},
-            </if>
-            <!--当密码不为空时-->
-            <if test="password!=null">
-                password=#{password},
-            </if>
-            <!--当性别不为空时 -->
-            <if test="empSex!=null">
-                empSex=#{empSex},
-            </if>
-            <!--当电话不为空时 -->
-            <if test="empTel!=null">
-                empTel=#{empTel},
-            </if>
-            <!--当邮箱不为空时 -->
-            <if test="empEmail!=null">
-                empEmail=#{empEmail},
-            </if>
-            <!--当地址不为空时 -->
-            <if test="empAddress!=null">
-                empAddress= #{empAddress},
-            </if>
-            <if test="role!=null">
-                empRoleId=#{role.roleId},
-            </if>
-            <if test="department!=null">
-                empDeptId=#{department.deptId},
-            </if>
-            <if test="role!=null">
-                empRoleId=#{role.roleId},
-            </if>
-            <if test="department!=null">
-                empDeptId=#{department.deptId}
-            </if>
+            empName=#{empName},
+            account=#{account},
+            password=#{password},
+            empSex=#{empSex},
+            empTel=#{empTel},
+            empEmail=#{empEmail},
+            empAddress= #{empAddress},
+            empRoleId=#{role.roleId},
+            empDeptId=#{department.deptId}
         </set>
         where empId=#{empId};
     </update>
 
-    <!-- 查询员工 -->
+    <!-- 多条件查询员工 -->
     <select id="getAllEmployee" resultType="employee" resultMap="allemps">
         SELECT * FROM employee e
         INNER JOIN role r
@@ -134,13 +103,25 @@
             <if test="account!=null and account!=''">
                 and account like concat('%',#{account},'%')
             </if>
+            <!--            &lt;!&ndash; 入职开始时间不为空时 &ndash;&gt;-->
+            <!--            <if test="empWorkTime!=null and empWorkTime!= ''">-->
+            <!--                and empWorkTime-->
+            <!--                <![CDATA[>=]]>-->
+            <!--                #{empWorkTime}-->
+            <!--            </if>-->
+            <!--            &lt;!&ndash; 入职查询结束时间不为空时 &ndash;&gt;-->
+            <!--            <if test="endTime!=null and endTime!= ''">-->
+            <!--                and empWorkTime-->
+            <!--                <![CDATA[<=]]>-->
+            <!--                #{endTime}-->
+            <!--            </if>-->
             <!--当员工角色不为空时 -->
-            <if test="roleId!=null and roleId!=''">
-                and empRoleId = #{role.roleId}
+            <if test="empRoleId!=null and empRoleId!=''">
+                and empRoleId = #{empRoleId}
             </if>
             <!--当员工部门不为空时 -->
-            <if test="deptId!= null and deptId!=''">
-                and empDeptId = #{dept.deptId}
+            <if test="empDeptId!= null and empDeptId!=''">
+                and empDeptId = #{empDeptId}
             </if>
         </where>
     </select>
@@ -156,17 +137,10 @@
         <result property="empWorkTime" column="empWorkTime"/>
         <result property="empOpen" column="empOpen"/>
         <result property="empState" column="empState"/>
-        <association property="role" javaType="role">
-            <id property="roleId" column="roleId"/>
-            <result property="roleName" column="roleName"/>
-            <result property="roleRemark" column="roleRemark"/>
-        </association>
-        <association property="department" javaType="department">
-            <id property="deptId" column="deptId"/>
-            <result property="deptName" column="deptName"/>
-            <result property="deptTime" column="deptTime"/>
-            <result property="deptRemark" column="deptRemark"/>
-        </association>
+        <association property="role" javaType="role" column="roleId"
+                     select="com.ruanyuan.crm_master.dao.RoleDao.getRoleById"></association>
+        <association property="department" javaType="department" column="deptId"
+                     select="com.ruanyuan.crm_master.dao.DepartmentDao.getDeptById"></association>
     </resultMap>
     <!-- 根据id查询员工信息 -->
     <select id="getEmpById" resultMap="employeeById">

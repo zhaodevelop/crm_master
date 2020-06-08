@@ -1,14 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruanyuan.crm_master.dao.TaskDao">
-	<!-- 添加任务信息 -->
-	<insert id="addTask" parameterType="task"></insert>
-	<!-- 删除任务信息 -->
-	<delete id="deleteTask" parameterType="int"></delete>
-	<!-- 修改任务信息 -->
-	<update id="updateTask" parameterType="task"></update>
-	<!-- 查询任务信息 -->
-	<select id="getAllTask" parameterType="task"></select>
+    <!-- 添加任务信息 -->
+    <insert id="addTask" parameterType="task">
+		insert into task(taskTitle,taskInfo,startTime,endTime,taskBuilderId,taskActorId)
+		values (#{taskTitle},#{taskInfo},#{startTime},#{endTime},#{employee.empId},#{employee.empId})
+    </insert>
+    <!-- 删除任务信息 -->
+    <delete id="deleteTask" parameterType="int">
+		delete from task where taskId=#{taskId}
+    </delete>
+    <!-- 修改任务信息 -->
+    <update id="updateTask" parameterType="task">
+        update task
+        <set>
+            <!--当主题不为空时-->
+            <if test="taskTitle!=null">
+                taskTitle=#{taskTitle},
+            </if>
+            <!--当内容不为空时-->
+            <if test="taskInfo!=null">
+                taskInfo=#{taskInfo},
+            </if>
+            <!--当状态不为空时-->
+            <if test="taskState!=null">
+                taskState=#{taskState},
+            </if>
+            <!--当开始时间不为空时 -->
+            <if test="startTime!=null">
+                startTime=#{startTime},
+            </if>
+            <!--当结束时间不为空时 -->
+            <if test="endTime!=null">
+                endTime=#{endTime},
+            </if>
+            <!--当结束时间不为空时 -->
+            <if test="endTime!=null">
+                endTime=#{endTime},
+            </if>
+        </set>
+        where taskId=#{taskId}
+    </update>
+    <!-- 查询任务信息 -->
+    <select id="getAllTask" parameterType="task" resultMap="taskEmp">
+	  SELECT * FROM task t
+        INNER JOIN employee e
+        ON t.taskBuilderId=e.empId
+        INNER JOIN employee e1
+        ON t.taskActorId=e1.empId
+	</select>
+    <resultMap id="taskEmp" type="Task">
+        <association property="taskBuilder" javaType="employee" column="empId"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
+        </association>
+        <association property="taskActor" javaType="employee" column="empId"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
+        </association>
+    </resultMap>
+    <!--批量删除-->
+    <delete id="deleteMoreTask" parameterType="int">
+        delete from task where taskId in
+        <foreach collection="array" index="index" close=")" open="(" item="taskId" separator=",">
+            #{taskId}
+        </foreach>
+    </delete>
 </mapper>

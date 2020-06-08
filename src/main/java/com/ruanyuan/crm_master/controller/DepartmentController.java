@@ -75,7 +75,7 @@ public class DepartmentController {
 
     //修改部门信息
     @PutMapping("/updateDept")
-    public int updateDept(Department department) {
+    public int updateDept(@RequestBody Department department) {
         int i = departmentService.updateDept(department);
         if (i > 0) {
             return 1;

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -16,7 +18,7 @@ class EmployeeControllerTest {
 
     @Test
     public void test() {
-        Employee empById = employeeDao.getEmpById(1);
-        System.out.println(empById);
+        List<Employee> a = employeeDao.getAllEmployee(null, null, 1, null);
+        System.out.println(a);
     }
 }

@@ -58,7 +58,7 @@ public class RoleController {
 
     //修改角色方法
     @PutMapping("/updateRole")
-    public int updateRole(Role role) {
+    public int updateRole(@RequestBody Role role) {
         int i = roleService.updateRole(role);
         if (i > 0) {
             return 1;

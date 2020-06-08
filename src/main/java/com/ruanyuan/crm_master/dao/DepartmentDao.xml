@@ -18,9 +18,6 @@
         <if test="deptName!=null">
             deptName=#{deptName},
         </if>
-        <if test="deptTime!=null">
-            deptTime=#{deptTime},
-        </if>
         <if test="deptRemark!=null">
             deptRemark=#{deptRemark},
         </if>
@@ -32,10 +29,6 @@
         </set>
         where deptId=#{deptId}
     </update>
-    <!-- 查询部门 -->
-    <!--    <select id="getAllDept" resultType="department">-->
-    <!--		select  * from dept-->
-    <!--	</select>-->
     <!--根据id查询部门信息-->
     <select id="getDeptById" resultType="department">
         select * from dept

@@ -59,21 +59,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDao.updateEmployee(Employee);
     }
 
+    /**
+     * 多条件查询员工信息
+     *
+     * @param empName   员工姓名
+     * @param account   员工账号
+     * @param empRoleId 角色id
+     * @param empDeptId 部门id
+     * @return 员工信息集合
+     */
     @Override
-    public List<Employee> getAllEmployee(String empName, String account, Integer roleId, Integer deptId) {
-        return employeeDao.getAllEmployee(empName, account, roleId, deptId);
+    public List<Employee> getAllEmployee(String empName, String account, Integer empRoleId, Integer empDeptId) {
+        System.out.println(empName + "," + account + "," + empRoleId + "," + empDeptId);
+        return employeeDao.getAllEmployee(empName, account, empRoleId, empDeptId);
     }
 
-
-    /**
-     * 多条件获取所有员工
-     *
-     * @return 分页后员工信息
-     */
-//    public List<Employee> getAllEmployee(String empName, String account, Integer roleId, Integer deptId) {
-//        // TODO Auto-generated method stub
-//        return employeeDao.getAllEmployee(empName, account, roleId, deptId);
-//    }
 
     /**
      * 查询所有员工信息
@@ -105,7 +105,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public int deleteMoreEmp(Integer[] emps) {
         return employeeDao.deleteMoreEmp(emps);
     }
-
 
 
     /**

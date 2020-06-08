@@ -75,9 +75,10 @@ public class EmployeeController {
 
     // 展示所有员工信息
     @PostMapping("/allEmps/{page}/{size}")
-    public PageInfo<Employee> showAllEmployee(@PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String empName, String account, Integer roleId, Integer deptId) {
+    public PageInfo<Employee> showAllEmployee(@PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String empName, String account, String empRoleId, String empDeptId) {
+        System.out.println("999999999999999999999999999");
         PageHelper.startPage(pageNo, pageSize);
-        List<Employee> allEmployee = employeeService.getAllEmployee(empName, account, roleId, deptId);
+        List<Employee> allEmployee = employeeService.getAllEmployee(empName, account, Integer.parseInt(empRoleId), Integer.parseInt(empDeptId));
         PageInfo<Employee> employeePageInfo = new PageInfo<Employee>(allEmployee);
         // 执行查询全部方法
         return employeePageInfo;
@@ -129,12 +130,12 @@ public class EmployeeController {
 
     //根据id修改员工信息
     @PutMapping("/updateEmpById")
-    public String updateEmpById(Employee emp) {
+    public Integer updateEmpById(@RequestBody Employee emp) {
         int i = employeeService.updateEmployee(emp);
         if (i > 0) {
-            return "success";
+            return 1;
         } else {
-            return "error";
+            return 0;
         }
     }
 }

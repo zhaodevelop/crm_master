@@ -2,10 +2,8 @@ package com.ruanyuan.crm_master.dao;
 
 import java.util.List;
 
-import com.ruanyuan.crm_master.pojo.Customer;
 import com.ruanyuan.crm_master.pojo.Interview;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * 访谈方法接口类
