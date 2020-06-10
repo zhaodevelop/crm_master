@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-
 /**
  * @author zbp
  */
@@ -43,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public int updateTask(Task task) {
         // TODO Auto-generated method stub
-        return taskDao.updateTask((TaskDao) task);
+        return taskDao.updateTask(task);
     }
 
     /**
@@ -54,6 +53,31 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getAllTask() {
         // TODO Auto-generated method stub
         return taskDao.getAllTask();
+    }
+
+    /**
+     * 多条件查询任务信息
+     *
+     * @param builder   创建人
+     * @param actor     执行人
+     * @param taskTitle 任务主题
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @return 任务信息集合
+     */
+    @Override
+    public List<Task> getAllTask(String builder, String actor, String taskTitle, String startTime, String endTime) {
+        return taskDao.getAllTask(builder, actor, taskTitle, startTime, endTime);
+    }
+
+    @Override
+    public Task getTaskById(int id) {
+        return taskDao.getTaskById(id);
+    }
+
+    @Override
+    public int deleteMoreTask(Integer[] TaksList) {
+        return taskDao.deleteMoreTask(TaksList);
     }
 
 }

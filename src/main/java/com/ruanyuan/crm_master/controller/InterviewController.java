@@ -114,7 +114,6 @@ public class InterviewController {
      */
     @RequestMapping("/download")
     public void download(HttpServletResponse response) throws Exception {
-        System.out.println("9999999999999999999999999999999");
         //查询全部访谈信息
         List<Interview> interviews = interviewService.getAllInterview();
         //创建一个工作簿

@@ -33,7 +33,7 @@ public interface TaskDao {
      * @param task
      * @return 影响的行数
      */
-    public int updateTask(TaskDao task);
+    public int updateTask(Task task);
 
     /**
      * 获取所有任务信息
@@ -45,14 +45,14 @@ public interface TaskDao {
     /**
      * 多条件查询任务信息
      *
-     * @param builder   创建人
-     * @param actor     执行人
      * @param taskTitle 任务主题
+     * @param taskState 任务状态
+     * @param empName   创建人
      * @param startTime 开始时间
      * @param endTime   结束时间
      * @return 任务信息集合
      */
-    public List<Task> getAllTask(@Param("empName") String builder, @Param("empName") String actor, @Param("taskTitle") String taskTitle, @Param("startTime") String startTime, @Param("endTime") String endTime);
+    public List<Task> getAllTask(@Param("taskTitle") String taskTitle, @Param("taskState") String taskState, @Param("taskBuilder") String taskBuilder, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
      * 根据id查询任务信息

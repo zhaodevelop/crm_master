@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -36,7 +38,8 @@ public class EmployeeController {
 
     // 员工登录
     @RequestMapping("/login")
-    private int getlogin(Employee emp, HttpSession session) {
+    private Object getlogin(Employee emp, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
         // 获取账号信息
         String account = emp.getAccount();
         // 获取密码信息
@@ -48,12 +51,17 @@ public class EmployeeController {
         Employee employee = employeeService.getLogin(emp);
         // 登录成功
         if (employee != null) {
+            result.put("code", 200);
+            result.put("msg", "登录成功");
+            result.put("access-token", employee);
             session.setAttribute("employee", employee);
-            return 1;
-        } else {
-            return 0;
+            Object employee1 = session.getAttribute("access-token");
+            System.out.println("employee!" + employee1);
+            return result;
         }
-
+        result.put("code", 500);
+        result.put("msg", "登录失败");
+        return result;
     }
 
     //员工注册
@@ -76,7 +84,6 @@ public class EmployeeController {
     // 展示所有员工信息
     @PostMapping("/allEmps/{page}/{size}")
     public PageInfo<Employee> showAllEmployee(@PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String empName, String account, String empRoleId, String empDeptId) {
-        System.out.println("999999999999999999999999999");
         PageHelper.startPage(pageNo, pageSize);
         List<Employee> allEmployee = employeeService.getAllEmployee(empName, account, Integer.parseInt(empRoleId), Integer.parseInt(empDeptId));
         PageInfo<Employee> employeePageInfo = new PageInfo<Employee>(allEmployee);
@@ -95,6 +102,7 @@ public class EmployeeController {
 
     @GetMapping("/allEmps")
     public List<Employee> showAllEmployee1() {
+        //查询所有员工信息
         List<Employee> allEmployee = employeeService.getAllEmployee();
         return allEmployee;
     }

@@ -5,8 +5,8 @@
 <mapper namespace="com.ruanyuan.crm_master.dao.TaskDao">
     <!-- 添加任务信息 -->
     <insert id="addTask" parameterType="task">
-		insert into task(taskTitle,taskInfo,startTime,endTime,taskBuilderId,taskActorId)
-		values (#{taskTitle},#{taskInfo},#{startTime},#{endTime},#{employee.empId},#{employee.empId})
+		insert into task(taskTitle,taskInfo,taskState,startTime,endTime,taskBuilderId,taskActorId)
+		values (#{taskTitle},#{taskInfo},0,#{startTime},#{endTime},#{taskBuilder.empId},#{taskActor.empId})
     </insert>
     <!-- 删除任务信息 -->
     <delete id="deleteTask" parameterType="int">
@@ -44,18 +44,45 @@
         where taskId=#{taskId}
     </update>
     <!-- 查询任务信息 -->
-    <select id="getAllTask" parameterType="task" resultMap="taskEmp">
-	  SELECT * FROM task t
-        INNER JOIN employee e
-        ON t.taskBuilderId=e.empId
-        INNER JOIN employee e1
-        ON t.taskActorId=e1.empId
-	</select>
-    <resultMap id="taskEmp" type="Task">
-        <association property="taskBuilder" javaType="employee" column="empId"
+    <select id="getAllTask" resultMap="TaskandEmp" resultType="task">
+        SELECT * FROM task t
+        INNER JOIN employee eb
+        ON t.taskBuilderId=eb.empId
+        INNER JOIN employee ea
+        ON t.taskActorId=ea.empId
+        <where>
+            <!--当主题不为空时 -->
+            <if test="taskTitle!=null and taskTitle !=''">
+                and taskTitle like concat('%',#{taskTitle},'%')
+            </if>
+            <!--当状态不为空时 -->
+            <if test="taskState!= null and taskState!=''">
+                and taskState like concat('%',#{taskState},'%')
+            </if>
+            <!--当创建人不为空时 -->
+            <if test="taskBuilder!= null and taskBuilder!=''">
+                and eb.empName like concat('%',#{taskBuilder},'%')
+            </if>
+            <!--当访谈时间不为空时 -->
+            <if test="startTime!=null and startTime!=''">
+                and startTime
+                <![CDATA[>=]]>
+                #{startTime}
+            </if>
+            <!--结束时间不为空时-->
+            <if test="endTime!=null and endTime!= ''">
+                and endTime
+                <![CDATA[<=]]>
+                #{endTime}
+            </if>
+        </where>
+    </select>
+    <resultMap id="TaskandEmp" type="task">
+        <association property="taskBuilder" javaType="employee" column="taskBuilderId"
                      select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
+
         </association>
-        <association property="taskActor" javaType="employee" column="empId"
+        <association property="taskActor" javaType="employee" column="taskActorId"
                      select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById">
         </association>
     </resultMap>
