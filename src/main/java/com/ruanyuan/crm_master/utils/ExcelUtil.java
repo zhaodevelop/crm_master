@@ -1,111 +1,222 @@
 package com.ruanyuan.crm_master.utils;
 
-import java.io.InputStream;
-import java.text.DecimalFormat;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 
 /**
- * Excel导入工具类
- * @author 
+ * 导出Excel
  *
+ * @author
  */
 public class ExcelUtil {
-    private final static String excel2003L =".xls";    //2003- 版本的excel
-    private final static String excel2007U =".xlsx";   //2007+ 版本的excel
-    /**
-     * Excel导入
-     */
-    public static  List<List<Object>> getBankListByExcel(InputStream in, String fileName) throws Exception{
-        List<List<Object>> list = null;
-        //创建Excel工作薄
-        Workbook work = getWorkbook(in,fileName);
-        if(null == work){
-            throw new Exception("创建Excel工作薄为空！");
-        }
-        Sheet sheet = null;//页数
-        Row row = null;//行数
-        Cell cell = null;//列数
-        list = new ArrayList<List<Object>>();
-        //指录入第一个工作簿
-       for (int i = 0; i < 1; i++) {
-            sheet = work.getSheetAt(i);
-            if(sheet==null){continue;}
-            //遍历当前sheet中的所有行
-            //包涵头部，所以要小于等于最后一列数,这里也可以在初始值加上头部行数，以便跳过头部
-            for (int j = sheet.getFirstRowNum(); j <= sheet.getLastRowNum(); j++) {
-                //读取一行
-                row = sheet.getRow(j);
-                //去掉空行和表头
-                if(row==null||row.getFirstCellNum()==j){continue;}
-                //遍历所有的列
-                List<Object> li = new ArrayList<Object>();
-                li.add(j+1);
-                for (int y = row.getFirstCellNum(); y < row.getLastCellNum(); y++) {
-                    cell = row.getCell(y);
-                    //Excel表格行数                                   
-                    System.out.println("开始转换");
-                    li.add(getCellValue(cell));
 
-                }
-                list.add(li);
+
+    /**
+     * 导出Excel
+     *
+     * @param excelName 要导出的excel名称
+     * @param list      要导出的数据集合
+     * @param fieldMap  中英文字段对应Map,即要导出的excel表头
+     * @param response  使用response可以导出到浏览器
+     * @return
+     */
+    public static <T> void export(String excelName, List<T> list, LinkedHashMap<String, String> fieldMap, HttpServletResponse response) {
+
+        // 设置默认文件名为当前时间：年月日时分秒
+        if (excelName == null || excelName == "") {
+            excelName = new SimpleDateFormat("yyyyMMddhhmmss").format(
+                    new Date()).toString();
+        }
+        // 设置response头信息
+        response.reset();
+        response.setContentType("application/vnd.ms-excel"); // 改成输出excel文件
+        try {
+            response.setHeader("Content-disposition", "attachment; filename="
+                    + new String(excelName.getBytes("gb2312"), "ISO-8859-1") + ".xls");
+        } catch (UnsupportedEncodingException e1) {
+            System.out.println(e1.getMessage());
+        }
+
+        try {
+
+            //创建一个WorkBook,对应一个Excel文件
+            HSSFWorkbook wb = new HSSFWorkbook();
+            //在Workbook中，创建一个sheet，对应Excel中的工作薄（sheet）
+            HSSFSheet sheet = wb.createSheet(excelName);
+            //字体样式
+            HSSFFont font = wb.createFont();
+            font.setFontName("仿宋_GB2312");
+            //粗体显示
+            font.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
+            font.setFontHeightInPoints((short) 12);
+            //创建单元格，并设置值表头 设置表头居中
+            HSSFCellStyle style = wb.createCellStyle();
+            // 填充工作表
+            style.setFont(font);
+            fillSheet(sheet, list, fieldMap, style);
+            //将文件输出
+            OutputStream ouputStream = response.getOutputStream();
+            wb.write(ouputStream);
+            ouputStream.flush();
+            ouputStream.close();
+        } catch (Exception e) {
+            System.out.println("导出Excel失败！");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * 根据字段名获取字段对象
+     *
+     * @param fieldName 字段名
+     * @param clazz     包含该字段的类
+     * @return 字段
+     */
+    public static Field getFieldByName(String fieldName, Class<?> clazz) {
+
+        // 拿到本类的所有字段
+        Field[] selfFields = clazz.getDeclaredFields();
+
+        // 如果本类中存在该字段，则返回
+        for (Field field : selfFields) {
+            //如果本类中存在该字段，则返回
+            if (field.getName().equals(fieldName)) {
+                return field;
             }
         }
-        return list;
-    }
-    /**
-     * 描述：根据文件后缀，自适应上传文件的版本
-     */
-    public static  Workbook getWorkbook(InputStream inStr,String fileName) throws Exception{
-        Workbook wb = null;
-        String fileType = fileName.substring(fileName.lastIndexOf("."));
-        if(excel2003L.equals(fileType)){
-            wb = new HSSFWorkbook(inStr);  //2003-
-        }else if(excel2007U.equals(fileType)){
-            wb = new XSSFWorkbook(inStr);  //2007+
-        }else{
-            throw new Exception("解析的文件格式有误！");
+
+        // 否则，查看父类中是否存在此字段，如果有则返回
+        Class<?> superClazz = clazz.getSuperclass();
+        if (superClazz != null && superClazz != Object.class) {
+            //递归
+            return getFieldByName(fieldName, superClazz);
         }
-        return wb;
+
+        // 如果本类和父类都没有，则返回空
+        return null;
     }
+
     /**
-     * 描述：对表格中数值进行格式化
+     * 根据字段名获取字段值
+     *
+     * @param fieldName 字段名
+     * @param o         对象
+     * @return 字段值
+     * @throws Exception 异常
      */
-    public static  Object getCellValue(Cell cell){
+    public static Object getFieldValueByName(String fieldName, Object o)
+            throws Exception {
+
+
         Object value = null;
-        DecimalFormat df = new DecimalFormat("0");  //格式化字符类型的数字
-        SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd");  //日期格式化
-        DecimalFormat df2 = new DecimalFormat("0.00");  //格式化数字
-        switch (cell.getCellType()) {
-            case STRING:
-                value = cell.getRichStringCellValue().getString();
-                break;
-            case NUMERIC:
-                if("General".equals(cell.getCellStyle().getDataFormatString())){
-                    value = df.format(cell.getNumericCellValue());
-                }else if("m/d/yy".equals(cell.getCellStyle().getDataFormatString())){
-                    value = sdf.format(cell.getDateCellValue());
-                }else{
-                    value = df2.format(cell.getNumericCellValue());
-                }
-                break;
-            case BOOLEAN:
-                value = cell.getBooleanCellValue();
-                break;
-            case BLANK:
-                value = "";
-                break;
-            default:
-                break;
+        //根据字段名得到字段对象
+        Field field = getFieldByName(fieldName, o.getClass());
+
+        //如果该字段存在，则取出该字段的值
+        if (field != null) {
+            field.setAccessible(true);//类中的成员变量为private,在类外边使用属性值，故必须进行此操作
+            value = field.get(o);//获取当前对象中当前Field的value
+        } else {
+            throw new Exception(o.getClass().getSimpleName() + "类不存在字段名 "
+                    + fieldName);
         }
+
         return value;
     }
+
+    /**
+     * 根据带路径或不带路径的属性名获取属性值,即接受简单属性名，
+     * 如userName等，又接受带路径的属性名，如student.department.name等
+     *
+     * @param fieldNameSequence 带路径的属性名或简单属性名
+     * @param o                 对象
+     * @return 属性值
+     * @throws Exception 异常
+     */
+    public static Object getFieldValueByNameSequence(String fieldNameSequence,
+                                                     Object o) throws Exception {
+
+        Object value = null;
+
+        // 将fieldNameSequence进行拆分
+        String[] attributes = fieldNameSequence.split("\\.");
+        if (attributes.length == 1) {
+            value = getFieldValueByName(fieldNameSequence, o);
+        } else {
+            // 根据数组中第一个连接属性名获取连接属性对象，如student.department.name
+            Object fieldObj = getFieldValueByName(attributes[0], o);
+            //截取除第一个属性名之后的路径
+            String subFieldNameSequence = fieldNameSequence
+                    .substring(fieldNameSequence.indexOf(".") + 1);
+            //递归得到最终的属性对象的值
+            value = getFieldValueByNameSequence(subFieldNameSequence, fieldObj);
+        }
+        return value;
+
+    }
+
+    /**
+     * 向工作表中填充数据
+     *
+     * @param sheet    excel的工作表名称
+     * @param list     数据源
+     * @param fieldMap 中英文字段对应关系的Map
+     * @param style    表格中的格式
+     * @throws Exception 异常
+     */
+    public static <T> void fillSheet(HSSFSheet sheet, List<T> list,
+                                     LinkedHashMap<String, String> fieldMap, HSSFCellStyle style) throws Exception {
+
+        // 定义存放英文字段名和中文字段名的数组
+        String[] enFields = new String[fieldMap.size()];
+        String[] cnFields = new String[fieldMap.size()];
+
+        // 填充数组
+        int count = 0;
+        for (Entry<String, String> entry : fieldMap.entrySet()) {
+            enFields[count] = entry.getKey();
+            cnFields[count] = entry.getValue();
+            count++;
+        }
+
+        //在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short
+        HSSFRow row = sheet.createRow((int) 0);
+
+        // 填充表头
+        for (int i = 0; i < cnFields.length; i++) {
+            HSSFCell cell = row.createCell(i);
+            cell.setCellValue(cnFields[i]);
+            cell.setCellStyle(style);
+            sheet.setColumnWidth(i, (int) (cnFields[i].getBytes().length * 1.2d * 256 > 12 * 256 ? cnFields[i].getBytes().length * 1.2d * 256 : 12 * 256));
+        }
+
+        // 填充内容
+        for (int index = 0; index < list.size(); index++) {
+            row = sheet.createRow(index + 1);
+            // 获取单个对象
+            T item = list.get(index);
+            for (int i = 0; i < enFields.length; i++) {
+                Object objValue = getFieldValueByNameSequence(enFields[i], item);
+                String fieldValue = objValue == null ? "" : objValue.toString();
+                row.createCell(i).setCellValue(fieldValue);
+            }
+        }
+    }
+
 }

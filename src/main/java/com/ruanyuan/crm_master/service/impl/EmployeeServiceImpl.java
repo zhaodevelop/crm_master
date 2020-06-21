@@ -70,7 +70,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public List<Employee> getAllEmployee(String empName, String account, Integer empRoleId, Integer empDeptId) {
-        System.out.println(empName + "," + account + "," + empRoleId + "," + empDeptId);
         return employeeDao.getAllEmployee(empName, account, empRoleId, empDeptId);
     }
 

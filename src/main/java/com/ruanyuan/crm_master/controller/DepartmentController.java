@@ -2,6 +2,7 @@ package com.ruanyuan.crm_master.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruanyuan.crm_master.annotation.ActorLog;
 import com.ruanyuan.crm_master.pojo.Department;
 import com.ruanyuan.crm_master.pojo.Employee;
 import com.ruanyuan.crm_master.service.DepartmentService;
@@ -29,8 +30,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/getAllDepts/{page}/{size}")
-    public PageInfo<Department> getAllDepts(@PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String deptName) {
-        System.out.println("9999999999999999999999999999999");
+    public PageInfo<Department> getAllDepts(@RequestBody @PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String deptName) {
         PageHelper.startPage(pageNo, pageSize);
         //执行查询所有部门方法
         List<Department> allDept = departmentService.getAllDept(deptName);
@@ -55,6 +55,7 @@ public class DepartmentController {
         dept.setDeptTime(date);
         //执行添加部门方法
         int i = departmentService.addDept(dept);
+        //判断执行情况
         if (i > 0) {
             return 1;
         } else {
@@ -63,9 +64,12 @@ public class DepartmentController {
     }
 
     //删除部门信息
+    @ActorLog("删除部门信息")
     @RequestMapping("/deleteDeptById/{id}")
     public int deleteDeptById(@PathVariable("id") Integer id) {
+        //执行删除部门方法
         int i = departmentService.deleteDept(id);
+        //判断执行情况
         if (i > 0) {
             return 1;
         } else {
@@ -74,9 +78,12 @@ public class DepartmentController {
     }
 
     //修改部门信息
+    @ActorLog("修改部门信息")
     @PutMapping("/updateDept")
     public int updateDept(@RequestBody Department department) {
+        //执行修改部门方法
         int i = departmentService.updateDept(department);
+        //判断执行情况
         if (i > 0) {
             return 1;
         } else {
@@ -92,14 +99,13 @@ public class DepartmentController {
     }
 
     //批量删除部门信息
+    @ActorLog("批量删除部门信息")
     @DeleteMapping("/delDepts")
     public int delDepts(Integer[] ids) {
         //截取字符串
         int i = departmentService.deleteMoreDept(ids);
+        //判断执行情况
         if (i > 0) {
-            System.out.println("qqqqqqqqqqqqqqqqqqqqqqqq");
-            System.out.println(i);
-            System.out.println(i);
             return 1;
         } else {
             return 0;

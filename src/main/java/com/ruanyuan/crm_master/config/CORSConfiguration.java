@@ -5,13 +5,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CrossConfig implements WebMvcConfigurer {
+public class CORSConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        //所有请求都允许跨域
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowCredentials(true)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .maxAge(3600);
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true);// 允许跨域带上cookies;
     }
 }

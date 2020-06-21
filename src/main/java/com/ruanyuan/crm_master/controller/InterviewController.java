@@ -2,6 +2,7 @@ package com.ruanyuan.crm_master.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruanyuan.crm_master.annotation.ActorLog;
 import com.ruanyuan.crm_master.pojo.Interview;
 import com.ruanyuan.crm_master.service.EmployeeService;
 import com.ruanyuan.crm_master.service.InterviewService;
@@ -41,7 +42,7 @@ public class InterviewController {
 
     //多条件查询访谈信息
     @PostMapping("/getMoreAllInters/{page}/{size}")
-    public PageInfo<Interview> getAllInters(@PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String custName, String empName, String interDatetime, String endTime) {
+    public PageInfo<Interview> getAllInters(@RequestBody @PathVariable("page") int pageNo, @PathVariable("size") int pageSize, String custName, String empName, String interDatetime, String endTime) {
         PageHelper.startPage(pageNo, pageSize);
         //执行查询所有部门方法
         List<Interview> allInters = interviewService.getAllInterview(custName, empName, interDatetime, endTime);
@@ -50,6 +51,7 @@ public class InterviewController {
     }
 
     //删除访谈记录方法
+    @ActorLog("删除访谈记录")
     @RequestMapping("/deleteInterview/{id}")
     public int deleteInterview(@PathVariable("id") Integer id) {
         //执行删除客户方法
@@ -80,6 +82,7 @@ public class InterviewController {
     }
 
     //批量删除访谈信息
+    @ActorLog("批量删除访谈信息")
     @DeleteMapping("/delInters")
     public int delInters(Integer[] ids) {
         //执行批量删除方法
@@ -93,9 +96,9 @@ public class InterviewController {
     }
 
     //根据id修改客户信息
+    @ActorLog("修改访谈信息")
     @PutMapping("/updateInterview")
     public int updateInterview(@RequestBody Interview interview) {
-        System.out.println(interview);
         //执行修改方法
         int i = interviewService.updateInterview(interview);
         //判断执行情况

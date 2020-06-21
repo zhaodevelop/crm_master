@@ -103,18 +103,6 @@
             <if test="account!=null and account!=''">
                 and account like concat('%',#{account},'%')
             </if>
-            <!--            &lt;!&ndash; 入职开始时间不为空时 &ndash;&gt;-->
-            <!--            <if test="empWorkTime!=null and empWorkTime!= ''">-->
-            <!--                and empWorkTime-->
-            <!--                <![CDATA[>=]]>-->
-            <!--                #{empWorkTime}-->
-            <!--            </if>-->
-            <!--            &lt;!&ndash; 入职查询结束时间不为空时 &ndash;&gt;-->
-            <!--            <if test="endTime!=null and endTime!= ''">-->
-            <!--                and empWorkTime-->
-            <!--                <![CDATA[<=]]>-->
-            <!--                #{endTime}-->
-            <!--            </if>-->
             <!--当员工角色不为空时 -->
             <if test="empRoleId!=null and empRoleId!=''">
                 and empRoleId = #{empRoleId}

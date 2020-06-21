@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.ruanyuan.crm_master.pojo.Task;
 import com.ruanyuan.crm_master.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

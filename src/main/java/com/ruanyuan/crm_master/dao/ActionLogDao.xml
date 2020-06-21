@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruanyuan.crm_master.dao.ActionLogDao">
-	<!-- 添加操作日志信息 -->
-	<insert id="addActionLog" parameterType="actionLog"></insert>
-	<!-- 删除操作日志信息 -->
-	<delete id="deleteActionLog" parameterType="int"></delete>
-	<!-- 修改操作日志信息 -->
-	<update id="updateActionLog" parameterType="actionLog"></update>
-	<!-- 查询操作日志信息 -->
-	<select id="getAllActionLog" parameterType="actionLog"></select>
+    <!--添加登录日志信息-->
+    <insert id="addActionLog" parameterType="actionlog">
+        insert into actionlog(actTime,actType,operateContent,actEmpId)
+        values (#{actTime},#{actType},#{operateContent},#{employee.empId})
+    </insert>
+    <!-- 删除操作日志信息 -->
+    <delete id="deleteActionLog" parameterType="int">
+		delete from actionlog where actLogId=#{actLogId}
+    </delete>
+    <!-- 查询操作日志信息 -->
+    <select id="getActionLog" resultMap="ActionLogAndEmp" resultType="actionlog">
+        SELECT * FROM actionlog a
+        INNER JOIN employee e
+        ON a.actEmpId=e.empId
+        <where>
+            <!--操作用户不为空时-->
+            <if test="empName!=null and empName!=''">
+                and e.empName like concat('%',#{empName},'%')
+            </if>
+            <!--当访谈时间不为空时 -->
+            <if test="actTime!=null and actTime!=''">
+                and actTime
+                <![CDATA[>=]]>
+                #{actTime}
+            </if>
+            <!--结束时间不为空时-->
+            <if test="endTime!=null and endTime!= ''">
+                and actTime
+                <![CDATA[<=]]>
+                #{endTime}
+            </if>
+        </where>
+    </select>
+    <resultMap id="ActionLogAndEmp" type="actionlog">
+        <association property="employee" column="actEmpId" javaType="employee"
+                     select="com.ruanyuan.crm_master.dao.EmployeeDao.getEmpById"></association>
+    </resultMap>
+    <!--批量删除-->
+    <delete id="deleteMoreActionLog" parameterType="int">
+        delete from actionlog where actLogId in
+        <foreach collection="array" index="index" close=")" open="(" item="actLogId" separator=",">
+            #{actLogId}
+        </foreach>
+    </delete>
 </mapper>

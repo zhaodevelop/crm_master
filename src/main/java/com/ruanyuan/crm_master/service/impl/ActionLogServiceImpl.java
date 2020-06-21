@@ -38,7 +38,12 @@ public class ActionLogServiceImpl implements ActionLogService {
         return actionLogDao.deleteActionLog(id);
     }
 
-
+    /**
+     * 修改操作日志信息
+     *
+     * @param actionLog
+     * @return 影响的行数
+     */
     @Override
     public int updateActionLog(ActionLog actionLog) {
         // TODO Auto-generated method stub
@@ -51,9 +56,33 @@ public class ActionLogServiceImpl implements ActionLogService {
      * @return 操作日志信息集合
      */
     @Override
-    public List<ActionLogDao> getAllActionLog() {
+    public List<ActionLog> getAllActionLog() {
         // TODO Auto-generated method stub
-        return actionLogDao.getAllActionLog();
+        return actionLogDao.getActionLog();
+    }
+
+    /**
+     * 多条件查询操作日志信息
+     *
+     * @param empName 员工姓名
+     * @param actTime 操作时间开始
+     * @param endTime 操作时间结束
+     * @return 操作日志信息集合
+     */
+    @Override
+    public List<ActionLog> getActionLog(String empName, String actTime, String endTime) {
+        return actionLogDao.getActionLog(empName, actTime, endTime);
+    }
+
+    /**
+     * 批量删除操作日志信息
+     *
+     * @param AcitonLogList 操作日志id集合
+     * @return 影响的行数
+     */
+    @Override
+    public int deleteMoreActionLog(Integer[] AcitonLogList) {
+        return actionLogDao.deleteMoreActionLog(AcitonLogList);
     }
 
 }

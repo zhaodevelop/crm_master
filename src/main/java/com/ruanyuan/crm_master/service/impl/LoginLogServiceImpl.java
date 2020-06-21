@@ -26,7 +26,7 @@ public class LoginLogServiceImpl implements LoginLogService {
     @Override
     public int addLoginLog(LoginLog loginLog) {
         // TODO Auto-generated method stub
-        return loginLogDao.addLoginLog((LoginLogDao) loginLog);
+        return loginLogDao.addLoginLog(loginLog);
     }
 
     /**
@@ -44,7 +44,7 @@ public class LoginLogServiceImpl implements LoginLogService {
     @Override
     public int updateLoginLog(LoginLog loginLog) {
         // TODO Auto-generated method stub
-        return loginLogDao.updateLoginLog((LoginLogDao) loginLog);
+        return loginLogDao.updateLoginLog(loginLog);
     }
 
     /**
@@ -53,9 +53,43 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @return 登录日志信息集合
      */
     @Override
-    public List<LoginLogDao> getAllLoginLog() {
+    public List<LoginLog> getAllLoginLog() {
         // TODO Auto-generated method stub
         return loginLogDao.getAllLoginLog();
+    }
+
+    /**
+     * 多条件查询登录日志信息
+     *
+     * @param logTime 登录日志生成时间
+     * @param endTime 登录日志截止时间
+     * @return 登录日志信息集合
+     */
+    @Override
+    public List<LoginLog> getAllLoginLog(String logTime, String endTime) {
+        return loginLogDao.getAllLoginLog(logTime, endTime);
+    }
+
+    /**
+     * 根据id查询登录日志信息
+     *
+     * @param id 登录日志id
+     * @return 登录日志实体类对象
+     */
+    @Override
+    public LoginLog getLoginLogById(int id) {
+        return loginLogDao.getLoginLogById(id);
+    }
+
+    /**
+     * 批量删除登录日志信息
+     *
+     * @param LoginLogList 登录日志id集合
+     * @return 影响的行数
+     */
+    @Override
+    public int deleteMoreLoginLog(Integer[] LoginLogList) {
+        return loginLogDao.deleteMoreLoginLog(LoginLogList);
     }
 
 }

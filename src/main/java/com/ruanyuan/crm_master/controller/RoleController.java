@@ -2,6 +2,7 @@ package com.ruanyuan.crm_master.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruanyuan.crm_master.annotation.ActorLog;
 import com.ruanyuan.crm_master.pojo.Role;
 import com.ruanyuan.crm_master.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ public class RoleController {
     public List<Role> getAllRoles() {
         //执行查询所有角色方法
         List<Role> allRole = roleService.getAllRole();
-        System.out.println(allRole);
         return allRole;
     }
 
@@ -31,13 +31,12 @@ public class RoleController {
         PageHelper.startPage(pageNo, pageSize);
         //执行查询所有角色方法
         List<Role> allRole = roleService.getAllRole();
-        System.out.println(allRole);
         PageInfo<Role> rolePageInfo = new PageInfo<Role>(allRole);
         return rolePageInfo;
     }
 
     @PostMapping("/getAllRoles/{page}/{size}")
-    public PageInfo<Role> getAllRole(@PathVariable("page") Integer pageNo, @PathVariable("size") Integer pageSize, String roleName) {
+    public PageInfo<Role> getAllRole(@RequestBody @PathVariable("page") Integer pageNo, @PathVariable("size") Integer pageSize, String roleName) {
         PageHelper.startPage(pageNo, pageSize);
         //执行查询所有角色方法
         List<Role> allRole = roleService.getAllRole(roleName);
@@ -57,6 +56,7 @@ public class RoleController {
     }
 
     //修改角色方法
+    @ActorLog("修改角色信息")
     @PutMapping("/updateRole")
     public int updateRole(@RequestBody Role role) {
         int i = roleService.updateRole(role);
@@ -68,6 +68,7 @@ public class RoleController {
     }
 
     //根据id删除角色
+    @ActorLog("删除角色信息")
     @RequestMapping("/delRoleById/{id}")
     public int deleteRoleById(@PathVariable("id") Integer id) {
         int i = roleService.deleteRole(id);
@@ -87,6 +88,7 @@ public class RoleController {
     }
 
     //批量删除角色信息
+    @ActorLog("批量删除角色信息")
     @DeleteMapping("/delRoles")
     public int delRoles(Integer[] ids) {
         int i = roleService.deleteMoreRole(ids);
